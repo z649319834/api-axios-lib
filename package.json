@@ -1,5 +1,5 @@
 {
-  "name": "api-axios",
+  "name": "api-axios-lib",
   "version": "0.0.0",
   "description": "基于aixos封装的api管理库",
   "main": "dist/index.js",

@@ -1,4 +1,4 @@
-# api-axios
+# api-axios-lib
 
 ## 为什么需要这个库
 
@@ -12,12 +12,12 @@
 
 ## 使用方法
 
-1. 安装依赖`npm i api-axios`
+1. 安装依赖`npm i api-axios-lib`
 2. 如何使用
 
 ```ts
 // 使用ApiAxios
-const { ApiAxios } = require("api-axios");
+const { ApiAxios } = require("api-axios-lib");
 // get 请求
 await ApiAxios.get("/login");
 // post 请求
@@ -26,7 +26,7 @@ await ApiAxios.post("/get-user-info", { nick: "lily" });
 await ApiAxios.upload("/upload/file", fileData);
 
 // 使用 formatApiConfig 映射接口调用
-const { formatApiConfig } = require("api-axios");
+const { formatApiConfig } = require("api-axios-lib");
 // 接口api地址配置
 const apiConfig = {
   login: "/user/login",
@@ -50,7 +50,7 @@ await api.getInfo({ nick: "lily" });
 ### 配置钩子。
 
 ```ts
-const { setFetchConfig } = require("api-axios");
+const { setFetchConfig } = require("api-axios-lib");
 // 配置钩子
 setFetchConfig({
   onMessage(data){
@@ -157,7 +157,7 @@ try {
 }
 
 // 建议的用法
-import { ApiAxiosError } from "api-axios";
+import { ApiAxiosError } from "api-axios-lib";
 
 try {
   await ApiAxios.post("/login");
@@ -176,10 +176,10 @@ try {
 
 使用场景：全局配置所有的请求或者响应钩子的时候：比如配置 headers，或者直接使用`axios`的时候。
 
-注意事项：一定不要在项目中重新安装`axios`，不然版本不一致，会导致配置不生效。直接使用`api-axios`导入的`axios` 即可。
+注意事项：一定不要在项目中重新安装`axios`，不然版本不一致，会导致配置不生效。直接使用`api-axios-lib`导入的`axios` 即可。
 
 ```js
-import { axios } from "api-axios";
+import { axios } from "api-axios-lib";
 
 axios.interceptors.request.use(config => {
   config.headers["X-Requested-With"] = "XMLHttpRequest";
