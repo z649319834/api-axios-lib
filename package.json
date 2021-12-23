@@ -9,7 +9,7 @@
     "test:coverage": "npx jest --coverage && open ./coverage/lcov-report/index.html",
     "clean": "del dist",
     "build": "npm run clean && tsc",
-    "prepublishOnly": "npm test && npm run build",
+    "prepublishOnly": "npm run build",
     "postpublish": "git push origin --tags"
   },
   "keywords": [

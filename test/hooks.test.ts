@@ -116,26 +116,26 @@ describe("测试onMessage", () => {
   });
 });
 
-describe("测试onLocation", () => {
-  const url = "/users";
-  const formatData = {
-    data: -1,
-    success: true,
-    message: "www.100tal.com"
-  };
-  it("data===-1, 调用onLocation方法", async () => {
-    mock.onGet(url).reply(200, formatData);
-    await ApiAxios.get(url);
-    expect(onLocation.mock.calls[0][0]).toBe(formatData.message);
-  });
-  it("data !== -1, 则不调用onLocation方法", async () => {
-    mock
-      .onGet(url)
-      .reply(200, Object.assign({}, formatData, { data: "hello" }));
-    await ApiAxios.get(url);
-    expect(onLocation.mock.calls.length).toBe(0);
-  });
-});
+// describe("测试onLocation", () => {
+//   const url = "/users";
+//   const formatData = {
+//     data: -1,
+//     success: true,
+//     message: "www.100tal.com"
+//   };
+//   it("data===-1, 调用onLocation方法", async () => {
+//     mock.onGet(url).reply(200, formatData);
+//     await ApiAxios.get(url);
+//     expect(onLocation.mock.calls[0][0]).toBe(formatData.message);
+//   });
+//   it("data !== -1, 则不调用onLocation方法", async () => {
+//     mock
+//       .onGet(url)
+//       .reply(200, Object.assign({}, formatData, { data: "hello" }));
+//     await ApiAxios.get(url);
+//     expect(onLocation.mock.calls.length).toBe(0);
+//   });
+// });
 
 describe("测试onLoading", () => {
   const url = "/users";
@@ -218,6 +218,7 @@ describe("测试needMessageValue 字段", () => {
     });
     expect(resData).toEqual({
       data: formatData.data,
+      success: true,
       message: formatData.message
     });
     done();
