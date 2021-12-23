@@ -58,8 +58,8 @@ const wrapAxiosMethod = (method: MethodName) => (
       handleMessage(userConfig, err);
       // 接口执行关闭后，触发loading关闭的钩子
       handleLoading(userConfig, false);
-      const error = new ApiAxiosError(err.message, err);
-      return Promise.reject(error);
+      // const error = new ApiAxiosError(err.message, err);
+      return Promise.reject(err);
     }
   );
 };

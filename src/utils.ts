@@ -91,6 +91,6 @@ export const formatResponse = (
   // 成功返回的数据, 默认返回解析后的data字段，只有needMessageValue 才需要返回
   const res = needMessageValue ? resData : parsedData;
   // 失败反馈的数据
-  const errorData = new ApiAxiosError(message, res);
-  return success ? Promise.resolve(res) : Promise.reject(errorData);
+  // const errorData = new ApiAxiosError(message, res);
+  return success ? Promise.resolve(res) : Promise.reject(res);
 };
