@@ -62,12 +62,6 @@ setFetchConfig({
       type
     })
   },
-  onLocation(url){
-    // 遇到网络接口返回data === -1的时候，执行跳转到指定地址
-    window.location.href = url
-    // 如果返回true的话，不会触发onMessage钩子。默认为false。版本： ^0.0.7
-    return true
-  },
   onLoading(loading){
     if (loading){
       // 执行loading显示操作
@@ -97,7 +91,6 @@ setFetchConfig({
   showLoading?: boolean
   // 成功调用接口，同时返回message和data字段组成的对象，默认返回data
   needMessageValue?: boolean
-
   // 例如
   // 成功失败都触发onMessage回调
   await ApiAxios.get(url,{

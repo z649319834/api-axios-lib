@@ -88,18 +88,16 @@ export const formatResponse = (
   if (!isFormatedData(resData)) return safeParse(resData);
   const { data, success, message } = resData;
   // 判断是否需要跳转登录
-  if (data === -1) {
-    // 如果onLocation 返回true，则直接返回，不执行后面的逻辑了
-    const isSkip = fetchConfig.onLocation(message);
-    if (isSkip) return Promise.reject(new ApiAxiosError(message, resData));
-  }
+  // if (data === -1) {
+  //   // 如果onLocation 返回true，则直接返回，不执行后面的逻辑了
+  //   const isSkip = fetchConfig.onLocation(message);
+  //   if (isSkip) return Promise.reject(new ApiAxiosError(message, resData));
+  // }
   handleMessage(formatConfig, message, success);
   const parsedData = safeParse(data);
   // 成功返回的数据, 默认返回解析后的data字段，只有needMessageValue 才需要返回
-  const successData = needMessageValue
-    ? { message, data: parsedData }
-    : parsedData;
+  const res = needMessageValue ? resData : parsedData;
   // 失败反馈的数据
-  const errorData = new ApiAxiosError(message, parsedData);
-  return success ? Promise.resolve(successData) : Promise.reject(errorData);
+  const errorData = new ApiAxiosError(message, res);
+  return success ? Promise.resolve(res) : Promise.reject(errorData);
 };
