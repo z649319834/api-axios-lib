@@ -42,23 +42,16 @@ export const handleLoading = (options: ApiResponseConfig, loading: boolean) => {
  * @param message 请求返回消息
  * @param success 请求结果
  */
-export const handleMessage = (
-  formatConfig: IemitConfig,
-  message: string,
-  success: boolean
-) => {
+export const handleMessage = (formatConfig: IemitConfig, res: any) => {
   const { emitErrorMessage, emitMessage, emitSuccessMessage } = formatConfig;
   const isNeedEdmitMessage =
     // 成功的message
-    (success && (emitSuccessMessage || emitMessage)) ||
+    (res.success && (emitSuccessMessage || emitMessage)) ||
     // 失败的message
-    (!success && (emitErrorMessage || emitMessage));
+    (!res.success && (emitErrorMessage || emitMessage));
   // 广播message信息
   if (isNeedEdmitMessage) {
-    fetchConfig.onMessage({
-      message,
-      success
-    });
+    fetchConfig.onMessage(res);
   }
 };
 
@@ -93,7 +86,7 @@ export const formatResponse = (
   //   const isSkip = fetchConfig.onLocation(message);
   //   if (isSkip) return Promise.reject(new ApiAxiosError(message, resData));
   // }
-  handleMessage(formatConfig, message, success);
+  handleMessage(formatConfig, resData);
   const parsedData = safeParse(data);
   // 成功返回的数据, 默认返回解析后的data字段，只有needMessageValue 才需要返回
   const res = needMessageValue ? resData : parsedData;

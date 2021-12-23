@@ -55,7 +55,7 @@ const wrapAxiosMethod = (method: MethodName) => (
     },
     // 网络接口调用失败时
     err => {
-      handleMessage(userConfig, err.message, false);
+      handleMessage(userConfig, err);
       // 接口执行关闭后，触发loading关闭的钩子
       handleLoading(userConfig, false);
       const error = new ApiAxiosError(err.message, err);
