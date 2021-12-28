@@ -31,7 +31,7 @@ export const isFormatedData = (resData: any) => {
 export const handleLoading = (options: ApiResponseConfig, loading: boolean) => {
   const { showLoading, loadingText } = options;
   // 只传入loadingText也会显示loading逻辑
-  if (loadingText || showLoading) {
+  if (showLoading) {
     fetchConfig.onLoading(loading, loadingText || "数据加载中...");
   }
 };
