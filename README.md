@@ -10,49 +10,53 @@
 6. 由于公司内容网络接口调用是否成功是基于 response 中的 success 字段来判断的，所以该库会自动格式化这些数据。
 7. 可根据需求自定义各种需求...
 
-## 使用方法
-
-1. 安装依赖`npm i api-axios-lib`
-2. 如何使用
+## Install
 
 ```ts
-// 使用ApiAxios
-const { ApiAxios } = require("api-axios-lib");
-// get 请求
-await ApiAxios.get("/login");
-// post 请求
-await ApiAxios.post("/get-user-info", { nick: "lily" });
-// upload 上传文件
-await ApiAxios.upload("/upload/file", fileData);
+npm i 'api-axios-lib'
+// or
 
-// 使用 formatApiConfig 映射接口调用
-const { formatApiConfig } = require("api-axios-lib");
-// 接口api地址配置
-const apiConfig = {
-  login: "/user/login",
-  getInfo: {
-    url: "/user/get-info",
-    method: "post"
-  }
-};
-const api = formatApiConfig(apiConfig);
-
-// 登录
-await api.login({ nick: "lily" });
-// 获取用户信息
-await api.getInfo({ nick: "lily" });
+yarn add 'api-axios-lib'
 ```
 
-## 配置钩子
+## Use
+
+1、全局配置
 
 > 介绍: 网络请求的时候，有些情况需要接口成功或者失败显示提示信息，比如使用 UI 组件的 toast 方法来显示请求中的 message 信息。所以新增了钩子方法。
 
-### 配置钩子。
-
 ```ts
-const { setFetchConfig } = require("api-axios-lib");
-// 配置钩子
+// api.js
+import { setFetchConfig } from 'api-axios-lib'
+
 setFetchConfig({
+  /**
+   * 是否调用onMessage方法，包含成功和失败
+   */
+  emitMessage: false,
+  /**
+   * 成功调用接口,是否触发onMessage方法
+   */
+  emitSuccessMessage: false,
+  /**
+   * 失败调用接口，是否触发onMessage方法
+   */
+  emitErrorMessage: false,
+  /**
+   * 是否执行onLoading钩子方法
+   */
+  showLoading: false,
+  /**
+   * loading时显示的loading文本
+   */
+  loadingText: "数据加载中...",
+  /**
+   * 成功调用接口，返回原数据，不做数据格式化处理
+   */
+  needMessageValue: false,
+
+  // 全局钩子函数
+  // 消息提示函数
   onMessage(data){
     const {success,message} = data
     const type = success ? 'success' : 'error'
@@ -62,6 +66,7 @@ setFetchConfig({
       type
     })
   },
+  // 显示loading函数
   onLoading(loading){
     if (loading){
       // 执行loading显示操作
@@ -71,98 +76,101 @@ setFetchConfig({
       ...
     }
   },
+  // post请求的时候统一对body数据格式化处理。比如过滤冗余字段、转义、或者全局添加id,token等字段，在这里统一处理
   formatPostBody(body){
-    // post请求的时候统一对body数据格式化处理。比如过滤冗余字段、转义、或者全局添加id,token等字段，在这里统一处理
     return {
       ...body,
       newData
     }
   }
 })
-  // 以上仅仅是配置了钩子，调用的时候还需要显式的传递以下参数来决定是否执行钩子调用
-  // 以下参数可以随意组合使用，
-  // 成功调用接口,是否触发onMessage方法
-  emitSuccessMessage?: boolean;
-  // 失败调用接口，是否触发onMessage方法
-  emitErrorMessage?: boolean;
-  // 是否调用onMessage方法，包含成功和失败
-  emitMessage?: boolean;
-  // 是否执行onLoading钩子方法
-  showLoading?: boolean
-  // 成功调用接口，同时返回message和data字段组成的对象，默认返回data
-  needMessageValue?: boolean
-  // 例如
-  // 成功失败都触发onMessage回调
-  await ApiAxios.get(url,{
-    emitMessage: true
-  })
-  // 仅成功的时候执行
-  await ApiAxios.get(url,{
-    emitSuccessMessage: true
-  })
-  // 请求触发loading逻辑
-  await ApiAxios.get(url,{
-    showLoading: true
-  })
+
 ```
 
-## 配置合并
+2、接口配置
 
-> 为了个性化配置接口的全局配置、api-data 配置、ApiAxios 的配置，新增一下合并规则。具体参考[lodash.defaults](https://lodash.com/docs/4.17.11#defaults)
-
-`ApiAxios中的配置> apiData配置> 全局配置`
-
-```js
-// 全局配置，优先级最低
-setFetchConfig({
-  showLoading: true,
-  onLoading
-});
+```ts
+// api.js
+import { formatApiConfig } from "api-axios-lib";
 
 // api 配置, 覆盖全局的配置。设置为了showLoading = false
 const apiConfig = {
-  login: "/user/login",
+  login: "/user/login", // 默认post请求
   getInfo: {
     url: "/user/get-info",
     method: "post",
-    showLoading: false
+    headers: {}, // 自定义头部信息
+    showLoading: true, // 发起请求显示loading，接口结束关闭loading
+    emitMessage: true // 接口请求响应后提示接口信息
+  },
+  getUserInfo: {
+    url: "/user/get-info",
+    method: "get",
+    headers: {} // 自定义头部信息
   }
 };
-const api = formatApiConfig(apiObj);
-
-// ApiAxios 调用时的配置。 优先级最高，重新覆盖apiConfig的配置，重新设置为了showLoading=true
-
-await api.getInfo({ nick: "test" }, { showLoading: true });
+export const api = formatApiConfig(apiObj);
 ```
 
-## 错误处理
+3、接口使用
+**注：post 和 get 的请求参数格式不一样，headers 配置位置也不一样**
 
-如果需要对 api 调用，监听错误信息，可以使用 try catch 语句
+```ts
+import { api } from 'api.js'
 
-```js
-// 不建议的用法,因为try 代码块里面的任何js错误，都会走到catch语句了。
-// 如果不判断error类型就认为是接口错误执行的话，就会造成误判。比如以下代码里的 throw new Error('error')
-try {
-  await ApiAxios.post("/login");
-  throw new Error("error");
-} catch (e) {
-  alert("api调用错误");
-}
+// post请求，第二个参数非必传
+await api.login({ nick: 'lily' },{
+  // 全局配置参数
+  loadingText: "loading...",
+  showLoading: true,
+  ...
+})
 
-// 建议的用法
-import { ApiAxiosError } from "api-axios-lib";
+// or
 
-try {
-  await ApiAxios.post("/login");
-  throw new Error("error");
-} catch (e) {
-  if (e instanceof ApiAxiosError) {
-    alert("api调用错误");
-  } else {
-    // 其他错误，继续抛出。这样可以及时在控制台发现
-    throw e;
+api.login({ nick: 'lily' },{
+  // 全局配置参数
+  loadingText: "loading...",
+  showLoading: true,
+  ...
+  headers:{
+    // 自定义头部信息
+    ...
   }
-}
+
+}).then(...).catch(...)
+
+// get请求
+
+await api.getUserInfo({
+  params:{
+    nick: 'lily'
+  },
+  headers:{
+    // 自定义头部信息
+    ...
+  }
+},{
+  // 全局配置参数
+  loadingText: "loading...",
+  showLoading: true,
+  ...
+})
+
+
+```
+
+另一种使用方式，不推荐使用，api 过于零散，不方便统一管理和维护
+
+```ts
+import { ApiAxios } from "api-axios-lib";
+
+// get 请求
+await ApiAxios.get("/login");
+// post 请求
+await ApiAxios.post("/get-user-info", { nick: "lily" });
+// upload 上传文件
+await ApiAxios.upload("/upload/file", fileData);
 ```
 
 ## 配置 axios
@@ -179,9 +187,3 @@ axios.interceptors.request.use(config => {
   return config;
 });
 ```
-
-## 如何开发
-
-1. 安装依赖: `npm install`
-2. 编写测试用例: `npm run test:watch`
-3. 确保 100%覆盖度: `npm run test:coverage`
